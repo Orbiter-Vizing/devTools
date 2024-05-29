@@ -1,6 +1,5 @@
 import {
   Signer,
-  ContractTransactionResponse,
   ContractTransactionReceipt,
   keccak256,
   randomBytes,
@@ -11,7 +10,6 @@ import {
 import { IBoosterGlobalState, vizingPadMeta } from "../types";
 import * as globalState from "../globalState";
 import * as deployment from "../deployment";
-import * as interact from "../interact";
 import {
   LaunchMessage,
   buildLandingParams,
