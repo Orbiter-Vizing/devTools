@@ -129,10 +129,9 @@ describe("VizingLaunch", () => {
       "0x"
     );
 
-    const tx = await OmniTokenBridgeA.getFunction(
-      "bridgeAsset(uint64,address,uint256,address,bytes,bytes)"
-    )(
-      padList[1].chainId,
+    // get receipt
+    const receipt = await OmniTokenBridgeA.bridgeAsset(
+      padList[1].chainId as BigNumberish,
       await signer.getAddress(),
       amount,
       await testToken.getAddress(),
@@ -142,9 +141,7 @@ describe("VizingLaunch", () => {
         value: details.gasFee,
         nonce: nonce,
       }
-    );
-
-    const receipt = await tx.wait();
+    ).then((tx) => tx.wait());
 
     const newToken = await OmniTokenBridgeA.predictTokenAddress(
       padList[1].chainId as BigNumberish,
@@ -161,7 +158,9 @@ describe("VizingLaunch", () => {
       signer
     );
 
-    await booster.launch(receipt);
+    expect(receipt).toBeDefined();
+
+    await booster.launch(receipt!);
 
     const balanceAfter = await newTokenContract.balanceOf(
       await signer.getAddress()
