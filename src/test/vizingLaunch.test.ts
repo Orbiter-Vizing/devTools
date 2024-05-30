@@ -25,13 +25,10 @@ describe("VizingLaunch", () => {
     booster = new VizingBooster(signer);
     await booster.build();
 
-    // get signer nonce
     let nonce = await signer.getNonce();
-    // console.log("nonce", nonce);
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
 
     // deploy OmniTokenBridge
-    const padList = booster.vizingPadList();
+    const padList = booster.getVizingPads();
     OmniTokenBridgeA = await new vizing.VizingTokenBridge__factory(
       signer
     ).deploy(
@@ -118,7 +115,7 @@ describe("VizingLaunch", () => {
 
   test("ERC20 Token bridge", async () => {
     let nonce = await signer.getNonce();
-    const padList = booster.vizingPadList();
+    const padList = booster.getVizingPads();
     const amount = ethers.parseUnits("100", 18);
     console.log("padList", padList);
     const details = await OmniTokenBridgeA.fetchBridgeAssetDetails(

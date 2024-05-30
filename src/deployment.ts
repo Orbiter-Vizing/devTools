@@ -42,8 +42,12 @@ export async function deployVizingPad(
 
 export async function fetchLaunchPadAddress(
   signer: Signer,
-  address: string
+  address: string,
+  chainIdInMeta: BigInt
 ): Promise<string> {
+  if (chainIdInMeta) {
+    return address;
+  }
   const instance = vizing.OmniToken__factory.connect(address, signer);
   try {
     return await instance.LaunchPad();

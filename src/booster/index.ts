@@ -18,6 +18,7 @@ import {
 } from "../utils";
 import { IMessageStruct } from "../coreContracts/contracts/interface/IMessageSpaceStation";
 import { fetchLaunchPadAddress } from "../deployment";
+import { as } from "vitest/dist/reporters-5f784f42";
 
 const defaultChainIds: BigInt[] = [BigInt(28518), BigInt(28519), BigInt(28520)];
 
@@ -64,7 +65,11 @@ export class VizingBooster {
       receipt as unknown as ContractTransactionReceipt
     );
 
-    const srcLaunchPad = await fetchLaunchPadAddress(signer, receipt.to!);
+    const srcLaunchPad = await fetchLaunchPadAddress(
+      signer,
+      receipt.to!,
+      this.findChainIdByVizingPad(receipt.to!) as BigInt
+    );
 
     for (const message of launchMessage) {
       const vizingPad = this.findVizingPadByChainId(message.destChainid);
@@ -74,14 +79,14 @@ export class VizingBooster {
         );
       }
 
-      const destChainid = this.findChainIdByVizingPad(srcLaunchPad) as BigInt;
-      if (!destChainid) {
+      const srcChainid = this.findChainIdByVizingPad(srcLaunchPad) as BigInt;
+      if (!srcChainid) {
         throw new Error(
-          'destChainid not found, please run "new VizingBooster(signer)" first, or use correct chainId'
+          "your contract did not send message to vizingPad, please check your contract implementation"
         );
       }
       const LandingParams: IMessageStruct.LandingParamsStruct =
-        buildLandingParams(message, destChainid);
+        buildLandingParams(message, srcChainid);
 
       const receiptRelay = await relayerMessage(
         await deployment.buildVizingPadInstance(signer, vizingPad),
@@ -109,7 +114,7 @@ export class VizingBooster {
       .meta.find((meta) => meta.vizingPad === vizingPad)?.chainId;
   }
 
-  vizingPadList(): vizingPadMeta[] {
+  getVizingPads(): vizingPadMeta[] {
     return globalState.getGlobalState().meta;
   }
 
